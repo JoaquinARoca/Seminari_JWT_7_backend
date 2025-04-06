@@ -1,4 +1,7 @@
 # SEMINARI JWT
+## Referencias 
+- CodigoPropio
+- ChatGPT
 
 ## Descripció
 Una API bàsica desenvolupada en Node.js amb TypeScript, utilitzant Express i Mongoose per a la gestió de dades en MongoDB. A més, s'inclou documentació amb Swagger.
@@ -89,5 +92,6 @@ http://localhost:9000/api/auth/google/callback per a desenvolupament local.
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_OAUTH_REDIRECT_URL=http://localhost:9000/api/auth/google/callback
+SECRET_ACCESS_TOKEN=your-Secret-Access-Token
 ```
 14.- Assegurar que aquestes variables estiguin carregades abans d'iniciar el servidor, utilitzar per defecte npm start per fer RUN en el projecte (ruta per defecte per agafar les variables d'entorn integrada).
