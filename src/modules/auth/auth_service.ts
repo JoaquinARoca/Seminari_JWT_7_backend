@@ -1,9 +1,11 @@
 import { encrypt, verified } from "../../utils/bcrypt.handle.js";
-import { generateToken } from "../../utils/jwt.handle.js";
+import { generateAccessToken,generateRefreshToken } from "../../utils/jwt.handle.js";
 import User, { IUser } from "../users/user_models.js";
 import { Auth } from "./auth_model.js";
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
+import { use } from "passport";
+
 
 const registerNewUser = async ({ email, password, name, age }: IUser) => {
     const checkIs = await User.findOne({ email });
@@ -18,20 +20,24 @@ const registerNewUser = async ({ email, password, name, age }: IUser) => {
 };
 
 const loginUser = async ({ email, password }: Auth) => {
-    const checkIs = await User.findOne({ email });
-    if(!checkIs) return "NOT_FOUND_USER";
+    const user = await User.findOne({ email });
+    if(!user) return "NOT_FOUND_USER";
 
-    const passwordHash = checkIs.password; //El encriptado que ve de la bbdd
+    const passwordHash = user.password; //El encriptado que ve de la bbdd
     const isCorrect = await verified(password, passwordHash);
     if(!isCorrect) return "INCORRECT_PASSWORD";
 
-    const token = generateToken(checkIs.email);
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user)
     const data = {
-        token,
-        user: checkIs
+        token: accessToken,
+        reftoken:refreshToken,
+        user: user
     }
     return data;
 };
+
+
 
 const googleAuth = async (code: string) => {
 
@@ -71,9 +77,14 @@ const googleAuth = async (code: string) => {
 
         const profile = profileResponse.data as {name:string, email: string; id: string };
         console.log("Access profile:", profile); 
+
+        if(!profile.email){
+            throw new Error("Perfil de Google no posee un correo electronico válido");
+        }
+
         // Busca o crea el perfil a la BBDD
         let user = await User.findOne({ 
-            $or: [{name: profile.name},{ email: profile.email }, { googleId: profile.id }] 
+            $or: [{ email: profile.email }, { googleId: profile.id }] 
         });
 
         if (!user) {
@@ -88,11 +99,10 @@ const googleAuth = async (code: string) => {
         }
 
         // Genera el token JWT
-        const token = generateToken(user.email);
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user)
 
-        console.log(token);
-        return { token, user };
-
+        return { accessToken: accessToken,refreshToken: refreshToken,user};
     } catch (error: any) {
         console.error('Google Auth Error:', error.response?.data || error.message); // Log detallado
         throw new Error('Error en autenticación con Google');

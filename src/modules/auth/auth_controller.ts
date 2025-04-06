@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { registerNewUser, loginUser, googleAuth } from "../auth/auth_service.js";
+import { generateAccessToken,generateRefreshToken } from "../../utils/jwt.handle.js";
+import jwt from 'jsonwebtoken'
 
 const registerCtrl = async ({body}: Request, res: Response) => {
     try{
@@ -50,7 +52,7 @@ const googleAuthCtrl = async(req: Request, res: Response) =>{
     const fullUrl= `${rootUrl}?${options.toString()}`;
     console.log("Redireccionando a:", fullUrl); 
     res.redirect(fullUrl);
-}
+};
 
 const googleAuthCallback = async (req: Request, res: Response) => {
     try {
@@ -66,21 +68,36 @@ const googleAuthCallback = async (req: Request, res: Response) => {
             return res.redirect('/login?error=authentication_failed');
         }
         
-        console.log(authData.token)
+        console.log(authData.accessToken)
         // Configurar cookies no https (secure)--> acces des del web.
-        res.cookie('token', authData.token, {
+        res.cookie('token', authData.accessToken, {
             httpOnly: true,
             secure: false, 
             sameSite: 'none',
             maxAge: 86400000 // 1 día
         });  
-        console.log(authData.token);
-        res.redirect(`http://localhost:4200/?token=${authData.token}`);   
+        console.log(authData.accessToken);
+        res.redirect(`http://localhost:4200/?token=${authData.refreshToken}`);   
     } catch (error: any) {
         console.error('Error en callback de Google:', error);
         res.redirect('/login?error=server_error');
     }
 };
 
+const refreshTokenHandler = async(req:Request, res:Response) => {
+    const refreshToken = req.body.refreshToken;
+    if(!refreshToken){
+        res.status(400).json({message:'Refresh token required'});
+    }
 
-export { registerCtrl, loginCtrl,googleAuthCtrl, googleAuthCallback };
+    try{
+        const decoded: any = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
+        const user = {email: decoded.email, name: decoded.name, role: decoded.role};
+        const accessToken = generateAccessToken(user);
+        res.json({ accessToken: accessToken });
+    }catch(e){
+        return res.status(401).json({message:'Invalid token refresh'})
+    }
+};
+
+export { registerCtrl, loginCtrl,googleAuthCtrl, googleAuthCallback,refreshTokenHandler };

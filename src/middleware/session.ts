@@ -11,6 +11,7 @@ const checkJwt = (req: RequestExt, res: Response, next: NextFunction) => {
         const jwtByUser = req.headers.authorization || null;
         const jwt = jwtByUser?.split(' ').pop(); // ['Bearer', '11111'] -> ['11111']
         console.log(jwt);
+        console.log(req.headers.authorization)
         const isUser = verifyToken(`${jwt}`);
         
         if (!isUser) {
