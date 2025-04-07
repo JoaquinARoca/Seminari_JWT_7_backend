@@ -11,11 +11,13 @@ import { routeNotFound } from './middleware/routeNotFound.js';
 import { checkJwt } from './middleware/session.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import cookieParser from 'cookie-parser';
 
 dotenv.config(); // Cargamos las variables de entorno desde el archivo .env
 
 const app = express();
 const LOCAL_PORT = process.env.SERVER_PORT || 9000;
+app.use(cookieParser());
 
 // Configuración de Swagger
 const swaggerOptions = {

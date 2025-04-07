@@ -17,6 +17,10 @@ export const getUserById = async (id: string) => {
     return await User.findById(id);
 };
 
+export const getUserByMail= async (email:string) => {
+    return await User.findOne({email:email});
+};
+
 export const updateUser = async (id: string, updateData: Partial<IUser>) => {
     return await User.updateOne({ _id: id }, { $set: updateData });
 };

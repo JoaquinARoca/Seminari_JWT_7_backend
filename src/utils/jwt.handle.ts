@@ -11,18 +11,17 @@ const generateToken = (id:string) => {
 
 function generateAccessToken(user:any,additionalData:any = {}){
     const payload = {email:user.email,name:user.name,age:user.age,role:"Admin",...additionalData};
-    return jwt.sign(payload,process.env.SECRET_ACCESS_TOKEN!,{expiresIn:'3d'})
+    return jwt.sign(payload,process.env.SECRET_ACCESS_TOKEN!,{expiresIn:'15m'})
 }
 
 function generateRefreshToken(user:any){
     const payload = {email:user.email,name:user.name,age:user.age,role:"Admin"};
-    return jwt.sign(payload,process.env.SECRET_ACCESS_TOKEN!,{expiresIn:'15m'})
+    return jwt.sign(payload,process.env.REFRESH_TOKEN_SECRET!,{expiresIn:'7d'})
 }
 
 const verifyToken = (jwt: string) => {
     const isOk = verify(jwt, JWT_SECRET);
     return isOk;
-
 };
 
 export { generateAccessToken,generateRefreshToken, verifyToken };
