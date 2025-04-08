@@ -36,7 +36,7 @@ const checkJwt = (req: RequestExt, res: Response, next: NextFunction) => {
         }
 
         // 3. Verificar el token
-        const decoded = jwt.verify(token, process.env.SECRET_ACCESS_TOKEN!);
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!);
         req.user = decoded;
         next();
 
