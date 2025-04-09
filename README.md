@@ -93,5 +93,6 @@ GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_OAUTH_REDIRECT_URL=http://localhost:9000/api/auth/google/callback
 SECRET_ACCESS_TOKEN=your-Secret-Access-Token
+REFRESH_TOKEN_SECRET = your-Secret-Refresh-Token
 ```
 14.- Assegurar que aquestes variables estiguin carregades abans d'iniciar el servidor, utilitzar per defecte npm start per fer RUN en el projecte (ruta per defecte per agafar les variables d'entorn integrada).
