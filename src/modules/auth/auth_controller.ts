@@ -37,11 +37,13 @@ const loginCtrl = async ({ body }: Request, res: Response) => {
             path: '/api/auth/refresh' // Solo accesible por esta ruta
         });
 
+        
         return res.json({ 
             user: {
                 email: responseUser.user.email,
                 name: responseUser.user.name
-            }
+            },
+            accestoken:responseUser.token
         });
     } catch (error: any) {
         return res.status(500).json({ message: error.message });
@@ -127,7 +129,7 @@ const refreshTokenHandler = async (req: Request, res: Response) => {
         
         return res.json({ 
             success: true,
-            accessToken: newAccessToken 
+            refreshToken: newAccessToken 
         });
         
     } catch (error: any) {
